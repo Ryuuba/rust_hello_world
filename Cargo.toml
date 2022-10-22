@@ -1,7 +1,10 @@
 [package]
 name = "hello_world"
+author = "Adán G. Medrano-Chávez"
 version = "0.1.0"
 edition = "2021"
+readme = "README.md"
+repository = "https://github.com/Ryuuba/rust_hello_world.git"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
