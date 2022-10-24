@@ -1,6 +1,8 @@
 use std::io;
 use std::env;
 
+mod dllist;
+
 // Rust function looks like Python's function
 fn hello(greeting: &str) {
     println!("Who are you?");
@@ -19,6 +21,7 @@ fn main() {
     // as_str returns a &str object from a String
     match argv[1].as_str() { //match needs a &str object
         "hello" => hello(argv[2].as_str()),
+        "mod_test" => dllist::test(),
         _ => println!("invalid option")
     }
 }
