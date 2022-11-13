@@ -162,6 +162,111 @@ impl<T: Copy> DLList<T> {
     }
 }
 
+// This iterator is a struct wrapping a NodePtr<T>
+pub struct ListIterator<T: Copy> {
+    current: Option<NodePtr<T>>
+}
+
+// This constructor creates a new NodePtr pointing to some node
+impl<T: Copy> ListIterator<T> {
+    fn new(start_at: Option<NodePtr<T>>) -> Self {
+        ListIterator { current: start_at, }
+    }
+}
+
+impl<T: Copy> Iterator for ListIterator<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut result: Option<Self::Item> = None;
+        let current = &self.current;
+        self.current = match current {
+            Some(current) => {
+                result = Some(current.borrow_mut().data.clone());
+                current.borrow_mut().next.clone()
+            },
+            None => None
+        };
+        result
+    }
+}
+
+// This iterator is a struct wrapping a NodePtr<T>
+pub struct ListIteratorLifetime<'a, T: Copy> {
+    current: &'a Option<NodePtr<T>>,
+}
+
+impl<'a, T: Copy> ListIteratorLifetime<'a, T> {
+    fn new(start_at: &'a Option<NodePtr<T>>) -> Self {
+        ListIteratorLifetime { current: start_at, } 
+    }
+}
+
+impl<'a, T: Copy> Iterator for ListIteratorLifetime<'a, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut result: Option<Self::Item> = None;
+        let current = self.current;
+        self.current = match current {
+            Some(current) => {
+                unsafe {
+                    result = Some(&(*current.as_ptr()).data);
+                    &(*current.as_ptr()).next
+                }
+            },
+            None => &None
+        };
+        result
+    }
+}
+
+impl<T: Copy> IntoIterator for DLList<T> {
+    type Item = T;
+    type IntoIter = ListIterator<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ListIterator::new(self.head.clone())
+    }
+}
+
+impl<'a, T: Copy> IntoIterator for &'a DLList<T> {
+    type Item = &'a T;
+    type IntoIter = ListIteratorLifetime<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        ListIteratorLifetime::new(&self.head)
+    }
+}
+
+
+pub fn test_iter() {
+    println!("Test iter starts");
+    let mut list = DLList::new();
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+    list.push_back(4);
+    print!("List holds these {} numbers: ", list.size());
+    for item in list {
+        print!("{} ", item);
+    }
+    println!("");
+}
+
+pub fn test_iter_ref() {
+    println!("Test iter with refs starts");
+    let mut list = DLList::new();
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+    list.push_back(4);
+    print!("List holds these {} numbers: ", list.size());
+    for item in &list {
+        print!("{} ", item);
+    }
+    println!("");
+    println!("The list preserves its size of {} elements", list.size());
+}
+
 pub fn test_back() {
     println!("Test back starts");
     let mut list = DLList::new();

@@ -13,6 +13,8 @@ fn main() {
         "list" => {
             dllist::test_front();
             dllist::test_back();
+            dllist::test_iter();
+            dllist::test_iter_ref();
         },
         //match needs a &str object
         _ => println!("invalid option"),
